@@ -27,22 +27,22 @@ exports.bust = {
     // setup here if necessary
     done();
   },
-  default_options: function(test) {
+  vanilla: function(test) {
     test.expect(1);
 
-    var actual = grunt.file.read('tmp/default_options');
-    var expected = grunt.file.read('test/expected/default_options');
-    test.equal(actual, expected, 'should describe what the default behavior is.');
+    var actual = grunt.file.read('tmp/test/fixtures/index.html');
+    var expected = grunt.file.read('test/expected/index.html');
+    test.equal(actual, expected, 'Replaces all external resource links with cachebuster type links');
 
     test.done();
   },
-  custom_options: function(test) {
-    test.expect(1);
+  requirejs: function (test) {
+      test.expect(1);
 
-    var actual = grunt.file.read('tmp/custom_options');
-    var expected = grunt.file.read('test/expected/custom_options');
-    test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
+      var actual = grunt.file.read('tmp/test/fixtures/require.html');
+      var expected = grunt.file.read('test/expected/require.html');
+      test.equal(actual, expected, 'Replace custom file pattern');
 
-    test.done();
-  },
+      test.done();
+  }
 };

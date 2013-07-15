@@ -16,10 +16,18 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('bust', 'Your task description goes here.', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
-      punctuation: '.',
-      separator: ', '
+      busters: {},
+      regexes: []
     });
 
+    var fileprops = {};
+    for (var filepath in options.busters) {
+        var pathDots = filepath.split('.');
+        fileprops[filepath] = {
+            end: pathDots.slice(-1)[0],
+            begining: pathDots.slice(0, pathDots.length - 1).join('.')
+        };
+    }
     // Iterate over all specified file groups.
     this.files.forEach(function(f) {
       // Concat specified files.
@@ -34,10 +42,18 @@ module.exports = function(grunt) {
       }).map(function(filepath) {
         // Read file source.
         return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+      }).join(grunt.util.linefeed);
 
-      // Handle options.
-      src += options.punctuation;
+      options.regexes.forEach(function (matcher) {
+          src = src.replace(
+              matcher.regex,
+              ['$1', options.busters[matcher.filepath]].join('.')
+          );
+      });
+
+      for ( var filepath in options.busters ) {
+          src = src.replace(filepath, [fileprops[filepath].begining, options.busters[filepath], fileprops[filepath].end].join('.'), "g");
+      }
 
       // Write the destination file.
       grunt.file.write(f.dest, src);
