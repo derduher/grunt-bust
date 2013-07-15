@@ -28,11 +28,12 @@ module.exports = function(grunt) {
       tests: ['tmp'],
     },
 
+    busters: false,
     // Configuration to be run (and then tested).
     bust: {
       requirejs: {
           options: {
-              busters: grunt.file.readJSON("tmp/cachebusters.json"),
+              busters: 'busters',
               regexes: [{
                   filepath: 'test/fixtures/index.js',
                   regex: /(require\(\['index)/g
@@ -45,9 +46,9 @@ module.exports = function(grunt) {
           }]
       },
       vanilla: {
-        options: {
-            busters: grunt.file.readJSON("tmp/cachebusters.json") 
-        },
+          options: {
+              busters: 'busters',
+          },
         files: [{
             expand: true,     // Enable dynamic expansion.
             src: ['test/fixtures/index.html'], // Actual pattern(s) to match.
@@ -62,6 +63,12 @@ module.exports = function(grunt) {
     },
     cachebuster: {
         build: {
+            options: {
+                complete: function (hashes) {
+                    grunt.config.set('busters', hashes);
+                    return hashes;
+                }
+            },
             src: [ 'test/fixtures/**/*' ],
             dest: 'tmp/cachebusters.json'
         }

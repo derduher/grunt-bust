@@ -16,9 +16,11 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('bust', 'Your task description goes here.', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
-      busters: {},
+      busters: 'busters',
       regexes: []
     });
+      this.requires(['cachebuster']);
+      options.busters = grunt.config.get([options.busters]);
 
     var fileprops = {};
     for (var filepath in options.busters) {
