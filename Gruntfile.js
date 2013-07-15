@@ -47,7 +47,8 @@ module.exports = function(grunt) {
       },
       vanilla: {
           options: {
-              busters: 'busters',
+              prepend: 'bust',
+              busters: 'busters'
           },
         files: [{
             expand: true,     // Enable dynamic expansion.

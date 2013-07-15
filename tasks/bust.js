@@ -16,6 +16,7 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('bust', 'Your task description goes here.', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
+        prepend: 'cbuster-',
       busters: 'busters',
       regexes: []
     });
@@ -49,12 +50,12 @@ module.exports = function(grunt) {
       options.regexes.forEach(function (matcher) {
           src = src.replace(
               matcher.regex,
-              ['$1', options.busters[matcher.filepath]].join('.')
+              ['$1', options.prepend + options.busters[matcher.filepath]].join('.')
           );
       });
 
       for ( var filepath in options.busters ) {
-          src = src.replace(filepath, [fileprops[filepath].begining, options.busters[filepath], fileprops[filepath].end].join('.'), "g");
+          src = src.replace(filepath, [fileprops[filepath].begining, options.prepend + options.busters[filepath], fileprops[filepath].end].join('.'), "g");
       }
 
       // Write the destination file.
