@@ -18,13 +18,22 @@ module.exports = function(grunt) {
     var options = this.options({
         prepend: 'cbuster-',
       busters: 'busters',
+      basePath: '',
       regexes: []
     });
       this.requires(['cachebuster']);
       options.busters = grunt.config.get([options.busters]);
 
-    var fileprops = {};
+    var fileprops = {},
+    basePathLen = options.basePath.length;
     for (var filepath in options.busters) {
+        if (options.basePath && filepath.indexOf(options.basePath) === 0) {
+            var newfilepath = filepath.slice(options.basePath.length);
+            options.busters[newfilepath] = options.busters[filepath];
+            delete options.busters[filepath];
+            filepath = newfilepath;
+            console.log(filepath);
+        }
         var pathDots = filepath.split('.');
         fileprops[filepath] = {
             end: pathDots.slice(-1)[0],

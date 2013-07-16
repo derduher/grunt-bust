@@ -55,6 +55,18 @@ module.exports = function(grunt) {
             src: ['test/fixtures/index.html'], // Actual pattern(s) to match.
             dest: 'tmp/'   // Destination path prefix.
         }],
+      },
+      base: {
+          options: {
+              basePath: 'test/fixtures/',
+              prepend: 'bust',
+              busters: 'busters'
+          },
+        files: [{
+            expand: true,     // Enable dynamic expansion.
+            src: ['test/fixtures/index-strip.html'], // Actual pattern(s) to match.
+            dest: 'tmp/'   // Destination path prefix.
+        }],
       }
     },
 

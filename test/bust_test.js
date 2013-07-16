@@ -36,6 +36,15 @@ exports.bust = {
 
     test.done();
   },
+  strip: function(test) {
+    test.expect(1);
+
+    var actual = grunt.file.read('tmp/test/fixtures/index-strip.html');
+    var expected = grunt.file.read('test/expected/index-strip.html');
+    test.equal(actual, expected, 'strip be base off of the filepath to match');
+
+    test.done();
+  },
   requirejs: function (test) {
       test.expect(1);
 
