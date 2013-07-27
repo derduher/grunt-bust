@@ -26,10 +26,20 @@ In your project's Gruntfile, add a section named `bust` to the data object passe
 grunt.initConfig({
   bust: {
     options: {
-      // Task-specific options go here.
+        bustable: [ '**/*.html' ],
+        regexes: [{
+            filepath: 'js/index.js',
+            regex: /(require\(\['index)/g
+        }],
+        basePath: 'test/fixtures/',
+        prepend: 'bust',
     },
     your_target: {
-      // Target-specific file lists and/or options go here.
+          files: [{
+              expand: true,     // Enable dynamic expansion.
+              src: ['test/fixtures/require.html'], // Actual pattern(s) to match.
+              dest: 'tmp/'   // Destination path prefix.
+          }]
     },
   },
 })
@@ -37,48 +47,80 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
+#### options.bustable
+Type: `Array`
+
+An Array of string file path globs matching the files that might have a url referencing it.
+
+#### options.regexes
+Type: `Array`
+Default value: `[]`
+
+an array of objects mapping pattern to filepath
+
+#### options.prepend
 Type: `String`
-Default value: `',  '`
+Default value: 'cbuster-'
 
-A string value that is used to do something with whatever.
+A string to insert before the md5 inserted into urls
 
-#### options.punctuation
+#### options.basePath
 Type: `String`
-Default value: `'.'`
+Default value: ''
 
-A string value that is used to do something else with whatever else.
+Remove basepath from files you are trying to match against.
+
+#### options.baseDir
+Type: `String`
+Default value: ''
+
+filepaths will be converted to be relative to baseDir
 
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  bust: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+In this example, the default options replace all references to all files in html files.
 
 ```js
 grunt.initConfig({
   bust: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
     },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+    files: [{
+        expand: true,     // Enable dynamic expansion.
+        src: [
+            '**/*.html'
+        ],
+        dest: '../dist/'   // Destination path prefix.
+    }]
+  }
+})
+```
+
+#### Custom Options
+In this example, regexes are used to insert a cachebuster after a require.js include. All cachebusters are prepended with bust instead of cbuster-, and only js files are replaced.
+
+```js
+grunt.initConfig({
+  bust: {
+    options: {
+        regexes: [{
+            filepath: 'js/index.js',
+            regex: /(require\(\['index)/g //'])
+        }],
+        basePath: 'app/',
+        prepend: 'bust',
+        bustable: [ 'js/**/*.js' ]
     },
-  },
+    files: [{
+        expand: true,     // Enable dynamic expansion.
+        src: [
+            '**/*.html',
+            '!node_modules/**/*.html'
+        ],
+        dest: '../dist/'   // Destination path prefix.
+    }]
+  }
 })
 ```
 

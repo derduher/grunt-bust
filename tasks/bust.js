@@ -10,6 +10,9 @@
 
 module.exports = function(grunt) {
 
+  var crypto = require('crypto'),
+  path = require('path');
+
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
@@ -17,29 +20,58 @@ module.exports = function(grunt) {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
         prepend: 'cbuster-',
-      busters: 'busters',
+      bustable: ['**/*'],
       basePath: '',
       regexes: []
     });
-      this.requires(['cachebuster']);
-      options.busters = grunt.config.get([options.busters]);
 
-    var fileprops = {},
-    basePathLen = options.basePath.length;
-    for (var filepath in options.busters) {
-        if (options.basePath && filepath.indexOf(options.basePath) === 0) {
-            var newfilepath = filepath.slice(options.basePath.length);
-            options.busters[newfilepath] = options.busters[filepath];
-            delete options.busters[filepath];
-            filepath = newfilepath;
-            console.log(filepath);
-        }
-        var pathDots = filepath.split('.');
-        fileprops[filepath] = {
-            end: pathDots.slice(-1)[0],
-            begining: pathDots.slice(0, pathDots.length - 1).join('.')
-        };
+    var self = this,
+    basedir = null,
+    fileprops = {},
+    basePathLen = options.basePath.length,
+    hashes = {};
+
+    if (options.basedir) {
+        basedir = path.resolve(options.basedir);
     }
+
+    var filesToHash = grunt.file.expand({
+        filter: 'isFile'
+    }, options.bustable
+                                   );
+
+    filesToHash.forEach(function(filename) {
+        // Concat specified files.
+        if (grunt.file.exists(filename)) {
+             var source = grunt.file.read(filename, {
+                encoding: null
+            });
+            var hash = crypto.
+                createHash('md5').
+                update(source).
+                digest('hex');
+
+            var key = filename;
+            if (basedir) {
+                key = path.relative(basedir, filename);
+            }
+
+            if (options.basePath && key.indexOf(options.basePath) === 0) {
+                key = key.slice(options.basePath.length);
+            }
+            var pathDots = key.split('.');
+            fileprops[key] = {
+                end: pathDots.slice(-1)[0],
+                begining: pathDots.slice(0, pathDots.length - 1).join('.')
+            };
+            hashes[key] = hash;
+
+        } else {
+            grunt.log.warn('bustable file "' + filename + '" not found.');
+        }
+
+    });
+
     // Iterate over all specified file groups.
     this.files.forEach(function(f) {
       // Concat specified files.
@@ -56,19 +88,29 @@ module.exports = function(grunt) {
         return grunt.file.read(filepath);
       }).join(grunt.util.linefeed);
 
+      var before = src.length,
+      changed = false;
       options.regexes.forEach(function (matcher) {
           src = src.replace(
               matcher.regex,
-              ['$1', options.prepend + options.busters[matcher.filepath]].join('.')
+              ['$1', options.prepend + hashes[matcher.filepath]].join('.')
           );
+          if (src.length !== before) {
+              changed = true;
+          }
       });
 
-      for ( var filepath in options.busters ) {
-          src = src.replace(filepath, [fileprops[filepath].begining, options.prepend + options.busters[filepath], fileprops[filepath].end].join('.'), "g");
+      for ( var filepath in hashes ) {
+          src = src.replace(filepath, [fileprops[filepath].begining, options.prepend + hashes[filepath], fileprops[filepath].end].join('.'), "g");
+          if (src.length !== before) {
+              changed = true;
+          }
       }
 
       // Write the destination file.
-      grunt.file.write(f.dest, src);
+      if (changed) {
+          grunt.file.write(f.dest, src);
+      }
 
       // Print a success message.
       grunt.log.writeln('File "' + f.dest + '" created.');
