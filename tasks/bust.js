@@ -110,10 +110,10 @@ module.exports = function(grunt) {
       // Write the destination file.
       if (changed) {
           grunt.file.write(f.dest, src);
+          // Print a success message.
+          grunt.log.writeln('File "' + f.dest + '" created.');
       }
 
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
     });
   });
 

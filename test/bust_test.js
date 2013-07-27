@@ -53,5 +53,10 @@ exports.bust = {
       test.equal(actual, expected, 'Replace custom file pattern');
 
       test.done();
+  },
+  nocopy: function (test) {
+      test.expect(1);
+      test.equal(grunt.file.exists('tmp/test/fixtures/slug.html'), false, "Dont copy what hasnt changed");
+      test.done();
   }
 };

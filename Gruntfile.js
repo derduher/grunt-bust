@@ -66,6 +66,21 @@ module.exports = function(grunt) {
             src: ['test/fixtures/index-strip.html'], // Actual pattern(s) to match.
             dest: 'tmp/'   // Destination path prefix.
         }],
+      },
+      nocopy: {
+          options: {
+              regexes: [{
+                  filepath: 'test/fixtures/index.js',
+                  regex: /(require\(\['index)/g //'])
+              }],
+            basePath: 'test/fixtures/',
+            prepend: 'bust',
+            bustable: ['test/fixtures/**/*']},
+          files: [{
+            expand: true,
+            src: ['test/fixtures/slug.html'],
+            dest: 'tmp/'
+          }]
       }
     },
 
