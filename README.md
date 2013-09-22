@@ -1,6 +1,6 @@
 # grunt-bust
 
-> replace urls with bustable urls
+> Insert MD5 hash of file into urls referencing that file
 
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
@@ -56,19 +56,20 @@ An Array of string file path globs matching the files that might have a url refe
 Type: `Array`
 Default value: `[]`
 
-an array of objects mapping pattern to filepath
+An array of objects mapping a pattern to a filepath
 
 #### options.prepend
 Type: `String`
 Default value: 'cbuster-'
 
-A string to insert before the md5 inserted into urls
+A string to insert before the md5 inserted into urls. This is handy for url rewrites;
+it gives the rewrite something predictable to search for.
 
 #### options.basePath
 Type: `String`
 Default value: ''
 
-Remove basepath from files you are trying to match against.
+Treat any files at basepath as if they are at the webroot. Eg. a basepath of `public` for a file `public/js/jquery.js` will cause the url `js/jquery.js` to match the file `public/js/jquery.js`
 
 #### options.baseDir
 Type: `String`
