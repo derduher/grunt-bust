@@ -9,6 +9,7 @@
 'use strict';
 
 module.exports = function(grunt) {
+    require('load-grunt-tasks')(grunt, {pattern: ['grunt-*', '!grunt-template-*']});
 
   // Project configuration.
   grunt.initConfig({
@@ -94,9 +95,6 @@ module.exports = function(grunt) {
   grunt.loadTasks('tasks');
 
   // These plugins provide necessary tasks.
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-nodeunit');
   //grunt.loadNpmTasks('grunt-cachebuster');
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
