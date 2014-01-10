@@ -1,7 +1,7 @@
 {
   "name": "grunt-bust",
   "description": "Insert MD5 hash of file into urls referencing that file",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/derduher/grunt-bust",
   "author": {
     "name": "Patrick Weygand",
