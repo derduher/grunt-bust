@@ -35,7 +35,7 @@
     "load-grunt-tasks": "~0.2.x"
   },
   "peerDependencies": {
-    "grunt": "~0.4.x"
+    "grunt": ">=0.4.0"
   },
   "keywords": [
     "gruntplugin",
